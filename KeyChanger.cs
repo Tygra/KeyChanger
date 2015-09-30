@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -12,25 +13,27 @@ namespace KeyChanger
 	public class KeyChanger : TerrariaPlugin
 	{
 		#region Plugin Info
-		public override string Author
+		public override Version Version
 		{
-			get { return "Enerdy"; }
+			get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version; }
 		}
-
-		public override string Description
-		{
-			get { return "SBPlanet KeyChanger System: Exchanges special chest keys by their correspondent items."; }
-		}
-
 		public override string Name
 		{
 			get { return "KeyChanger"; }
 		}
 
-		public override Version Version
+
+		public override string Author
 		{
-			get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return "Enerdy"; }
 		}
+
+
+		public override string Description
+		{
+			get { return "SBPlanet KeyChanger System"; }
+		}
+
 
 		public KeyChanger(Main game)
 			: base(game)
@@ -41,16 +44,13 @@ namespace KeyChanger
 		#region Initialize & Dispose
 		public override void Initialize()
 		{
-			//This is the main command, which branches to everything the plugin can do, by checking the first parameter a player inputs
 			Commands.ChatCommands.Add(new Command(new List<string>() { "key.change", "key.reload", "key.mode" }, KeyChange, "key")
 			{
 				HelpDesc = new[]
 				{
-					$"{Commands.Specifier}key - Shows plugin info",
-					$"{Commands.Specifier}key change <type> - Exchanges a key of the input type",
-					$"{Commands.Specifier}key list - Shows a list of available keys and items",
-					$"{Commands.Specifier}key mode <mode> - Changes exchange mode",
-					$"{Commands.Specifier}key reload - Reloads the config file",
+					"{0}key - Shows plugin info".SFormat(Commands.Specifier),
+					"{0}key change <type> - Exchanges golden keys".SFormat(Commands.Specifier),
+					"{0}key list - Shows a list of available items".SFormat(Commands.Specifier),
 					"If an exchange fails, make sure your inventory has free slots"
 				}
 			});
@@ -72,7 +72,6 @@ namespace KeyChanger
 		{
 			TSPlayer ply = args.Player;
 
-			// SSC check to alert users
 			if (!Main.ServerSideCharacter)
 			{
 				ply.SendWarningMessage("[Warning] This plugin will not work properly with ServerSideCharacters disabled.");
@@ -80,12 +79,10 @@ namespace KeyChanger
 
 			if (args.Parameters.Count < 1)
 			{
-				// Plugin Info
 				var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-				ply.SendMessage($"KeyChanger (v{version}) by Enerdy", Color.SkyBlue);
-				ply.SendMessage("Description: Changes special chest keys into their specific items", Color.SkyBlue);
-				ply.SendMessage($"Syntax: {Commands.Specifier}key <list/mode/change/reload> [type]", Color.SkyBlue);
-				ply.SendMessage($"Type {Commands.Specifier}help key for more info", Color.SkyBlue);
+				ply.SendMessage(string.Format("KeyChanger (v{0}) by Enerdy", version), Color.SkyBlue);
+				ply.SendMessage("Syntax: {0}key <list/change> [type]".SFormat(Commands.Specifier), Color.SkyBlue);
+				ply.SendMessage("Type {0}help key for more info".SFormat(Commands.Specifier), Color.SkyBlue);
 			}
 			else if (args.Parameters[0].ToLower() == "change" && args.Parameters.Count == 1)
 			{
@@ -103,7 +100,6 @@ namespace KeyChanger
 							break;
 						}
 
-						// Prevents cast from the server console
 						if (ply == TSPlayer.Server)
 						{
 							ply.SendErrorMessage("You must use this command in-game.");
@@ -113,38 +109,21 @@ namespace KeyChanger
 						Key key;
 						string str = args.Parameters[1].ToLower();
 
-						if (str == Key.Temple.Name)
-							key = Key.Temple;
-						else if (str == Key.Jungle.Name)
-							key = Key.Jungle;
-						else if (str == Key.Corruption.Name)
-							key = Key.Corruption;
-						else if (str == Key.Crimson.Name)
-							key = Key.Crimson;
-						else if (str == Key.Hallowed.Name)
-							key = Key.Hallowed;
-						else if (str == Key.Frozen.Name)
-							key = Key.Frozen;
+						if (str == Key.Golden.Name)
+							key = Key.Golden;						
 						else
 						{
-							ply.SendErrorMessage("Invalid key type! Available types: " + String.Join(", ",
-								Key.Temple.Enabled ? Key.Temple.Name : null,
-								Key.Jungle.Enabled ? Key.Jungle.Name : null,
-								Key.Corruption.Enabled ? Key.Corruption.Name : null,
-								Key.Crimson.Enabled ? Key.Crimson.Name : null,
-								Key.Hallowed.Enabled ? Key.Hallowed.Name : null,
-								Key.Frozen.Enabled ? Key.Frozen.Name : null));
+							ply.SendErrorMessage("Invalid key type! Available types: " + string.Join(", ",
+								Key.Golden.Enabled ? Key.Golden.Name : null));
 							return;
 						}
 
-						// Verifies whether the key has been enabled
 						if (!key.Enabled)
 						{
 							ply.SendInfoMessage("The selected key is disabled.");
 							return;
 						}
 
-						// Checks if the player carries the necessary key
 						var lookup = ply.TPlayer.inventory.FirstOrDefault(i => i.netID == (int)key.Type);
 						if (lookup == null)
 						{
@@ -160,17 +139,15 @@ namespace KeyChanger
 							else
 								region = key.Region;
 
-							// Checks if the required region is set to null
 							if (region == null)
 							{
 								ply.SendInfoMessage("No valid region was set for this key.");
 								return;
 							}
 
-							// Checks if the player is inside the region
 							if (args.Player.CurrentRegion != region)
 							{
-								ply.SendErrorMessage("You are not in a valid region to make this exchange.");
+								ply.SendErrorMessage("You can only exchange your Golden Keys at Spawn!");
 								return;
 							}
 						}
@@ -179,14 +156,13 @@ namespace KeyChanger
 						for (int i = 0; i < 50; i++)
 						{
 							item = ply.TPlayer.inventory[i];
-							// Loops through the player's inventory
+
 							if (item.netID == (int)key.Type)
 							{
-								// Found the item, checking for available slots
 								if (item.stack == 1 || ply.InventorySlotAvailable)
 								{
 									ply.TPlayer.inventory[i].stack--;
-									NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, String.Empty, ply.Index, i);
+									NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, string.Empty, ply.Index, i);
 									Random rand = new Random();
 									Item give = key.Items[rand.Next(0, key.Items.Count)];
 									ply.GiveItem(give.netID, give.name, give.width, give.height, 1);
@@ -194,7 +170,7 @@ namespace KeyChanger
 									ply.SendSuccessMessage("Exchanged a {0} for 1 {1}!", take.name, give.name);
 									return;
 								}
-								// Sent if neither of the above conditions were fulfilled.
+
 								ply.SendErrorMessage("Make sure you have at least one available inventory slot.");
 								return;
 							}
@@ -224,12 +200,7 @@ namespace KeyChanger
 
 					case "list":
 						{
-							ply.SendMessage("Temple Key - " + String.Join(", ", Key.Temple.Items.Select(i => i.name)), Color.Goldenrod);
-							ply.SendMessage("Jungle Key - " + String.Join(", ", Key.Jungle.Items.Select(i => i.name)), Color.Goldenrod);
-							ply.SendMessage("Corruption Key - " + String.Join(", ", Key.Corruption.Items.Select(i => i.name)), Color.Goldenrod);
-							ply.SendMessage("Crimson Key - " + String.Join(", ", Key.Crimson.Items.Select(i => i.name)), Color.Goldenrod);
-							ply.SendMessage("Hallowed Key - " + String.Join(", ", Key.Hallowed.Items.Select(i => i.name)), Color.Goldenrod);
-							ply.SendMessage("Frozen Key - " + String.Join(", ", Key.Frozen.Items.Select(i => i.name)), Color.Goldenrod);
+							ply.SendMessage("Golden Key - " + string.Join(", ", Key.Golden.Items.Select(i => i.name)), Color.Goldenrod);
 							break;
 						}
 

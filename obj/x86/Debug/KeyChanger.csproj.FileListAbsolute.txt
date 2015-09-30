@@ -1,0 +1,13 @@
+C:\Users\tygra\Downloads\KeyChanger-master\KeyChanger-master\obj\x86\Debug\KeyChanger.csprojResolveAssemblyReference.cache
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\KeyChanger.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\KeyChanger.pdb
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\Newtonsoft.Json.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\TerrariaServer.exe
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\TShockAPI.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\MySql.Data.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\HttpServer.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\BCrypt.Net.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\bin\Release\Mono.Data.Sqlite.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\obj\x86\Debug\KeyChanger.csprojResolveAssemblyReference.cache
+C:\Users\tygra\Desktop\Plugins\KeyChanger\obj\x86\Debug\KeyChanger.dll
+C:\Users\tygra\Desktop\Plugins\KeyChanger\obj\x86\Debug\KeyChanger.pdb
