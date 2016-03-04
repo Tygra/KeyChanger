@@ -71,9 +71,9 @@ namespace KeyChanger
 			string error;
 			var list = new List<string>()
 			{
-				ply.Group.HasPermission("key.change") ? "change" : null,
-				ply.Group.HasPermission("key.reload") ? "reload" : null,
-				ply.Group.HasPermission("key.mode") ? "mode" : null,
+				ply.Group.HasPermission("geldar.level5") ? "change" : null,
+				ply.Group.HasPermission("geldar.admin") ? "reload" : null,
+				ply.Group.HasPermission("geldar.admin") ? "mode" : null,
 				"list"
 			};
 

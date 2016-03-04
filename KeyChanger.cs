@@ -9,7 +9,7 @@ using TShockAPI.DB;
 
 namespace KeyChanger
 {
-	[ApiVersion(1, 21)]
+	[ApiVersion(1, 22)]
 	public class KeyChanger : TerrariaPlugin
 	{
 		#region Plugin Info
@@ -94,7 +94,7 @@ namespace KeyChanger
 				switch (cmd)
 				{
 					case "change":
-						if (!ply.Group.HasPermission("key.change"))
+						if (!ply.Group.HasPermission("geldar.level5"))
 						{
 							ply.SendErrorMessage("You do not have access to this command.");
 							break;
@@ -179,7 +179,7 @@ namespace KeyChanger
 
 					case "reload":
 						{
-							if (!ply.Group.HasPermission("key.reload"))
+							if (!ply.Group.HasPermission("geldar.admin"))
 							{
 								ply.SendErrorMessage("You do not have access to this command.");
 								break;
@@ -206,7 +206,7 @@ namespace KeyChanger
 
 					case "mode":
 						{
-							if (!ply.Group.HasPermission("key.mode"))
+							if (!ply.Group.HasPermission("geldar.admin"))
 							{
 								ply.SendErrorMessage("You do not have access to this command.");
 								break;
